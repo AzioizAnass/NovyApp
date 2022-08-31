@@ -12,7 +12,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import {Badge} from 'react-native-elements';
 import axios from 'axios';
 
-const ExportImage = ({imageUri, setImageUri, url}) => {
+const ExportImage = ({imageUri, setImageUri, url, qrCode}) => {
   const sendImage = () => {
     let file = new FormData();
     file.append('file', {
@@ -24,6 +24,9 @@ const ExportImage = ({imageUri, setImageUri, url}) => {
     const config = {
       headers: {
         'Content-Type': 'multipart/form-data',
+      },
+      params: {
+        qrCode,
       },
     };
     //please change the IP address below

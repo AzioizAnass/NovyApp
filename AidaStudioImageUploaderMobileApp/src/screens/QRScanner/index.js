@@ -25,7 +25,10 @@ class QRScanner extends Component {
     if (!this.stopScanning) {
       if (qrInfo[1] == 'src=aida-studio-qr-code') {
         let url = qrInfo[0];
-        this.props.navigation.navigate('ImportImageOptions', {url: url});
+        this.props.navigation.navigate('ImportImageOptions', {
+          url: url,
+          qrCode: scanResult.data,
+        });
         //please change the ip address below
         axios
           .get(url + '/api/qrCodeValide')

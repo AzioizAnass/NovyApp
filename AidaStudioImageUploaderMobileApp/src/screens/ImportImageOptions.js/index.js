@@ -11,7 +11,7 @@ const ImportImageOptions = ({route, navigation}) => {
   let cameraRef = useRef(null);
   let [imageUri, setImageUri] = useState('');
 
-  const {url} = route.params;
+  const {url, qrCode} = route.params;
 
   useEffect(() => {
     Permissions.check('photo').then(response => {
@@ -85,6 +85,7 @@ const ImportImageOptions = ({route, navigation}) => {
           imageUri={imageUri}
           setImageUri={setImageUri}
           url={url}
+          qrCode={qrCode}
         />
       ) : (
         <View style={styles.container}>
