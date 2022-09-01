@@ -31,7 +31,7 @@ class QRScanner extends Component {
         });
         //please change the ip address below
         axios
-          .get(url + '/api/qrCodeValide')
+          .get(url + '/api/qrCodeValide?qrCode='+qrInfo)
           .then(res => {})
           .catch(err => {
             console.warn('Error :' + err);
