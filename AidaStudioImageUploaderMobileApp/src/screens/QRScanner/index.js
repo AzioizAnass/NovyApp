@@ -2,6 +2,12 @@ import React, {Component} from 'react';
 import {Text, StyleSheet, View, Alert} from 'react-native';
 import {RNCamera} from 'react-native-camera';
 import axios from 'axios';
+import {URLSearchParams} from '@visto9259/urlsearchparams-react-native';
+
+interface QrDataModel{
+  server:string,
+  params:URLSearchParams
+}
 class QRScanner extends Component {
   constructor(props) {
     super(props);
@@ -16,22 +22,32 @@ class QRScanner extends Component {
     };
   }
 
-  onBarCodeRead(scanResult) {
-    var seconds = new Date().getTime();
-    // String barecode = urlBackend.concat(";").concat(token).concat(";").concat(nowStr).concat(";").concat(projectDescription).concat(";").concat(idUser).concat(";").concat(securityKey).concat(";");//.concat(time);
 
-    let qrInfo = scanResult.data.split(';');
+  onBarCodeRead(scanResult) {
+    //var seconds = new Date().getTime();
+    //todo: use a mapper instead
+    let qrInfo = scanResult.data.split('?');
+
+    const qrData:QrDataModel={
+      server: qrInfo[0],
+      params:  new URLSearchParams(qrInfo[1])
+    }
+    // String barecode = urlBackend.concat(";").concat(token).concat(";").concat(nowStr).concat(";").concat(projectDescription).concat(";").concat(idUser).concat(";").concat(securityKey).concat(";");//.concat(time);
+    console.log("*********** projectId=" + qrData.params.get('projectId'));
+    console.log("*********** src=" + qrData.params.get('src'));
+
 
     if (!this.stopScanning) {
-      if (qrInfo[1] == 'src=aida-studio-qr-code') {
+      if (qrData.params.get('src') === 'aida-studio-qr-code') {
         let url = qrInfo[0];
         this.props.navigation.navigate('ImportImageOptions', {
-          url: url,
+          url: qrData.server,
           qrCode: scanResult.data,
         });
         //please change the ip address below
+        console.log("***** qrData.params.toString()="+qrData.params);
         axios
-          .get(url + '/api/qrCodeValide?qrCode='+qrInfo)
+          .get(url + '/api/qrCodeValide?qrCode='+encodeURIComponent(scanResult.data))
           .then(res => {})
           .catch(err => {
             console.warn('Error :' + err);
@@ -39,7 +55,7 @@ class QRScanner extends Component {
           });
       }
 
-      if (qrInfo[1] != 'src=aida-studio-qr-code') {
+      if (qrData.params.get('src') === 'src=aida-studio-qr-code') {
         this.stopScanning = true;
         Alert.alert('Error', 'QR code does not correspond to Aida Studio', [
           {
@@ -56,8 +72,6 @@ class QRScanner extends Component {
         }
       }
     }
-
-    return;
   }
 
   async takePicture() {
